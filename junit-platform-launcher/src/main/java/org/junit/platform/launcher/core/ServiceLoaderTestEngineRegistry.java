@@ -15,8 +15,10 @@ import static java.util.stream.Collectors.toList;
 import static org.apiguardian.api.API.Status.INTERNAL;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.StringJoiner;
 import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
@@ -57,16 +59,17 @@ public final class ServiceLoaderTestEngineRegistry {
 		// @formatter:on
 	}
 
-	private String createDiscoveredTestEnginesListing(Iterable<TestEngine> testEngines) {
-		// @formatter:off
-		
-		List<String> details = ((Stream<TestEngine>) CollectionUtils.toStream(testEngines))
-				.map(engine -> String.format("%s (%s)", engine.getId(), join(", ", computeAttributes(engine))))
-				.collect(toList());
-		return details.isEmpty()
-				? "No TestEngine implementation discovered."
-				: "Discovered TestEngines with IDs: [" + join(", ", details) + "]";
-		// @formatter:on
+	public String createDiscoveredTestEnginesListing(Iterable<TestEngine> testEngines) {
+		Iterator<TestEngine> iterator = testEngines.iterator();
+		if (!iterator.hasNext()) {
+			return "No TestEngine implementation discovered.";
+		}
+		StringJoiner joiner = new StringJoiner("\n");
+		for (TestEngine engine : testEngines) {
+			joiner.add(engine.getId());
+			computeAttributes(engine).stream().map(attr -> "  " + attr).forEach(joiner::add);
+		}
+		return joiner.toString();
 	}
 
 	private List<String> computeAttributes(TestEngine engine) {

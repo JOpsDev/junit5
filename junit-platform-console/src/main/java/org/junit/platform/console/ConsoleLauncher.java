@@ -75,7 +75,7 @@ public class ConsoleLauncher {
 			if (options.isListEngines()) {
 				ServiceLoaderTestEngineRegistry registry = new ServiceLoaderTestEngineRegistry();
 				Iterable<TestEngine> engines = registry.loadTestEngines();
-				out.println(registry.createDiscoveredTestEnginesMessage(engines));
+				out.println(registry.createDiscoveredTestEnginesListing(engines));
 
 				return ConsoleLauncherExecutionResult.success();
 			}
